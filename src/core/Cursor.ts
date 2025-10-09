@@ -6,6 +6,11 @@ export class Cursor {
   private currentY: number = 0;
   private targetX: number = 0;
   private targetY: number = 0;
+  private previousX: number = 0;
+  private previousY: number = 0;
+  private velocity: number = 0;
+  private maxVelocity: number = 0;
+  private velocitySmoothing: number = 0.1;
   private smoothness: number = 0.15;
 
   constructor() {
@@ -34,9 +39,24 @@ export class Cursor {
   }
 
   public update(): void {
+    // Store previous position for velocity calculation
+    this.previousX = this.currentX;
+    this.previousY = this.currentY;
+    
     // Smooth interpolation for reading position
     this.currentX += (this.targetX - this.currentX) * this.smoothness;
     this.currentY += (this.targetY - this.currentY) * this.smoothness;
+    
+    // Calculate velocity (distance moved this frame)
+    const deltaX = this.currentX - this.previousX;
+    const deltaY = this.currentY - this.previousY;
+    const currentVelocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    
+    // Smooth velocity with exponential moving average
+    this.velocity = this.velocity * (1 - this.velocitySmoothing) + currentVelocity * this.velocitySmoothing;
+    
+    // Track maximum velocity for normalization
+    this.maxVelocity = Math.max(this.maxVelocity * 0.999, this.velocity); // Slowly decay max
   }
 
   public getPosition(): { x: number; y: number } {
@@ -45,6 +65,14 @@ export class Cursor {
 
   public getTargetPosition(): { x: number; y: number } {
     return { x: this.targetX, y: this.targetY };
+  }
+
+  public getVelocity(): number {
+    return this.velocity;
+  }
+
+  public getNormalizedVelocity(): number {
+    return this.maxVelocity > 0 ? Math.min(this.velocity / this.maxVelocity, 1) : 0;
   }
 
   public dispose(): void {

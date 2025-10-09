@@ -16,8 +16,19 @@ export class ParticleSystem {
   private particles: Particle[] = [];
   private maxParticles: number;
   private particlePool: Particle[] = [];
-  private emissionRate: number = 15; // particles per frame
   private camera: THREE.Camera;
+  
+  // Configuration parameters
+  public config = {
+    emissionRate: 15,
+    particleLifetime: 2.5,
+    speedBasedBrightness: true,
+    brightnessMultiplier: 2.0,
+    minBrightness: 0.2,
+    particleSize: 1.0,
+    velocitySpread: 1.0,
+    drag: 0.97
+  };
 
   constructor(camera: THREE.Camera, maxParticles: number = 5000) {
     this.camera = camera;
@@ -75,7 +86,11 @@ export class ParticleSystem {
       fragmentShader: particleFragmentShader,
       uniforms: {
         uTime: { value: 0 },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) }
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uSpeedBrightness: { value: 1.0 },
+        uBrightnessMultiplier: { value: this.config.brightnessMultiplier },
+        uMinBrightness: { value: this.config.minBrightness },
+        uParticleSize: { value: this.config.particleSize }
       },
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -86,7 +101,7 @@ export class ParticleSystem {
   /**
    * Emit particles at the cursor position in screen space
    */
-  public emitParticles(screenX: number, screenY: number, width: number, height: number): void {
+  public emitParticles(screenX: number, screenY: number, width: number, height: number, velocity: number = 0): void {
     // Convert screen coordinates to normalized device coordinates
     const ndcX = (screenX / width) * 2 - 1;
     const ndcY = -(screenY / height) * 2 + 1;
@@ -104,13 +119,20 @@ export class ParticleSystem {
     const distance = 3;
     const worldPos = this.camera.position.clone().add(direction.multiplyScalar(distance));
 
+    // Update speed-based brightness uniform
+    if (this.config.speedBasedBrightness) {
+      this.material.uniforms.uSpeedBrightness.value = Math.max(this.config.minBrightness, velocity * this.config.brightnessMultiplier);
+    } else {
+      this.material.uniforms.uSpeedBrightness.value = 1.0;
+    }
+
     // Emit multiple particles
-    for (let i = 0; i < this.emissionRate; i++) {
-      this.emitParticle(worldPos);
+    for (let i = 0; i < this.config.emissionRate; i++) {
+      this.emitParticle(worldPos, velocity);
     }
   }
 
-  private emitParticle(position: THREE.Vector3): void {
+  private emitParticle(position: THREE.Vector3, velocity: number = 0): void {
     // Find inactive particle
     const particle = this.particlePool.find(p => !p.active);
     if (!particle) return;
@@ -126,7 +148,9 @@ export class ParticleSystem {
     
     // Set velocity with random direction (more natural spread)
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 0.015 + 0.005;
+    const baseSpeed = Math.random() * 0.015 + 0.005;
+    const speedMultiplier = this.config.speedBasedBrightness ? (1 + velocity * this.config.velocitySpread) : 1;
+    const speed = baseSpeed * speedMultiplier;
     const verticalBias = (Math.random() - 0.5) * 0.01; // Random up/down
     particle.velocity.set(
       Math.cos(angle) * speed,
@@ -151,7 +175,7 @@ export class ParticleSystem {
       }
 
       // Update lifetime
-      particle.lifetime += deltaTime * 0.4;
+      particle.lifetime += deltaTime * (1 / this.config.particleLifetime);
       
       // Deactivate if lifetime exceeded
       if (particle.lifetime >= 1.0) {
@@ -164,7 +188,7 @@ export class ParticleSystem {
       particle.position.add(particle.velocity);
       
       // Apply drag (air resistance)
-      particle.velocity.multiplyScalar(0.97);
+      particle.velocity.multiplyScalar(this.config.drag);
       
       // Slight random turbulence
       particle.velocity.x += (Math.random() - 0.5) * 0.0001;
@@ -194,7 +218,13 @@ export class ParticleSystem {
   }
 
   public setEmissionRate(rate: number): void {
-    this.emissionRate = Math.max(1, Math.min(50, rate));
+    this.config.emissionRate = Math.max(1, Math.min(50, rate));
+  }
+
+  public updateUniforms(): void {
+    this.material.uniforms.uBrightnessMultiplier.value = this.config.brightnessMultiplier;
+    this.material.uniforms.uMinBrightness.value = this.config.minBrightness;
+    this.material.uniforms.uParticleSize.value = this.config.particleSize;
   }
 
   public dispose(): void {

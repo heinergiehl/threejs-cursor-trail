@@ -8,7 +8,7 @@
 body {
   overflow: hidden;
   background: #000;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 canvas {
@@ -27,4 +27,35 @@ canvas {
   z-index: 9999;
   transition: transform 0.15s ease;
   box-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+}
+
+/* GUI styling */
+.lil-gui {
+  --background-color: rgba(10, 10, 20, 0.9);
+  --text-color: rgba(255, 255, 255, 0.9);
+  --title-background-color: rgba(0, 200, 255, 0.8);
+  --title-text-color: #ffffff;
+  --widget-color: rgba(255, 255, 255, 0.2);
+  --hover-color: rgba(0, 200, 255, 0.2);
+  --focus-color: rgba(0, 200, 255, 0.4);
+  --number-color: rgba(0, 200, 255, 0.9);
+  --string-color: rgba(100, 255, 100, 0.9);
+  --folder-indent: 7px;
+  font-family: "Arial", sans-serif;
+  font-size: 12px;
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 200, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.lil-gui .lil-gui {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 200, 255, 0.2);
+}
+
+.lil-gui .title {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
