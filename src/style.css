@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: none;
+}
+
+body {
+  overflow: hidden;
+  background: #000;
+  font-family: 'Arial', sans-serif;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100vh;
+}
+
+.cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(0, 200, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.5);
+}
