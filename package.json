@@ -1,22 +1,94 @@
 {
-    "name": "particle-cursor",
+    "name": "@heinergiehl/threejs-cursor-trail",
     "version": "1.0.0",
-    "description": "Advanced particle cursor with Three.js and TypeScript",
-    "main": "dist/bundle.js",
+    "type": "module",
+    "description": "High-performance 3D particle cursor effects with Three.js - customizable, lightweight, and framework-agnostic",
+    "author": "Heiner Giehl <heiner@example.com>",
+    "license": "MIT",
+    "homepage": "https://github.com/heinergiehl/threejs-cursor-trail#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/heinergiehl/threejs-cursor-trail.git"
+    },
+    "bugs": {
+        "url": "https://github.com/heinergiehl/threejs-cursor-trail/issues"
+    },
+    "keywords": [
+        "three.js",
+        "particles",
+        "cursor",
+        "webgl",
+        "animation",
+        "effects",
+        "interactive",
+        "mouse-trail",
+        "graphics",
+        "typescript"
+    ],
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "require": "./dist/index.cjs.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./styles": "./dist/styles.css"
+    },
     "scripts": {
         "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
+        "build": "npm run clean && npm run build:lib && npm run build:types",
+        "build:lib": "rollup -c",
+        "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
+        "build:demo": "vite build --config vite.demo.config.ts",
+        "clean": "rimraf dist",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts --fix",
+        "preview": "vite preview",
+        "typecheck": "tsc --noEmit",
+        "prepublishOnly": "npm run test && npm run build",
+        "release": "np"
+    },
+    "peerDependencies": {
+        "three": ">=0.150.0"
     },
     "devDependencies": {
+        "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-typescript": "^11.1.5",
+        "@types/jest": "^29.5.8",
         "@types/three": "^0.160.0",
+        "@typescript-eslint/eslint-plugin": "^6.12.0",
+        "@typescript-eslint/parser": "^6.12.0",
+        "eslint": "^8.54.0",
+        "jest": "^29.7.0",
+        "jest-environment-jsdom": "^29.7.0",
+        "np": "^9.2.0",
+        "rimraf": "^5.0.5",
+        "rollup": "^4.6.1",
+        "rollup-plugin-dts": "^6.1.0",
+        "rollup-plugin-string": "^3.0.0",
+        "ts-jest": "^29.1.1",
         "typescript": "^5.3.3",
-        "vite": "^5.0.11",
-        "vite-plugin-string": "^1.2.2"
+        "vite": "^5.0.11"
     },
     "dependencies": {
-        "gsap": "^3.12.5",
-        "lil-gui": "^0.20.0",
-        "three": "^0.160.0"
+        "gsap": "^3.12.5"
+    },
+    "optionalDependencies": {
+        "lil-gui": "^0.20.0"
+    },
+    "engines": {
+        "node": ">=16.0.0"
     }
 }

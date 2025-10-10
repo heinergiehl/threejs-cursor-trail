@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThreeJS Cursor Trail - Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #000;
+        font-family: "Arial", sans-serif;
+        overflow: hidden;
+      }
+
+      .demo-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      .demo-info {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        pointer-events: none;
+      }
+
+      .demo-info h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #00c8ff;
+      }
+
+      .demo-info p {
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 5px;
+      }
+
+      .preset-buttons {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        z-index: 1000;
+      }
+
+      .preset-btn {
+        background: rgba(0, 200, 255, 0.2);
+        border: 1px solid rgba(0, 200, 255, 0.5);
+        color: #00c8ff;
+        padding: 8px 16px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .preset-btn:hover {
+        background: rgba(0, 200, 255, 0.4);
+        border-color: #00c8ff;
+      }
+
+      .preset-btn.active {
+        background: rgba(0, 200, 255, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-container" id="demo-container">
+      <div class="demo-info">
+        <h1>@heinergiehl/threejs-cursor-trail</h1>
+        <p>Move your mouse to see the particle trail effect</p>
+        <p>Try the preset buttons below or use the GUI controls</p>
+        <p>Speed affects particle brightness and velocity</p>
+      </div>
+
+      <div class="preset-buttons">
+        <button class="preset-btn active" data-preset="default">Default</button>
+        <button class="preset-btn" data-preset="fireflies">Fireflies</button>
+        <button class="preset-btn" data-preset="energetic">Energetic</button>
+        <button class="preset-btn" data-preset="subtle">Subtle</button>
+        <button class="preset-btn" data-preset="cosmic">Cosmic</button>
+      </div>
+    </div>
+
+    <script type="module">
+      // This would be: import { createCursorTrail } from '@heinergiehl/threejs-cursor-trail';
+      import { createCursorTrail } from "../src/index.js";
+
+      const presets = {
+        default: {
+          emissionRate: 15,
+          particleLifetime: 2.5,
+          speedBasedBrightness: true,
+          brightnessMultiplier: 2.0,
+          minBrightness: 0.2,
+          particleSize: 1.0,
+          velocitySpread: 1.0,
+          drag: 0.97,
+        },
+        fireflies: {
+          emissionRate: 8,
+          particleLifetime: 4.0,
+          speedBasedBrightness: true,
+          brightnessMultiplier: 1.5,
+          minBrightness: 0.4,
+          particleSize: 1.5,
+          velocitySpread: 0.5,
+          drag: 0.99,
+        },
+        energetic: {
+          emissionRate: 35,
+          particleLifetime: 1.5,
+          speedBasedBrightness: true,
+          brightnessMultiplier: 3.5,
+          minBrightness: 0.1,
+          particleSize: 0.8,
+          velocitySpread: 2.0,
+          drag: 0.95,
+        },
+        subtle: {
+          emissionRate: 5,
+          particleLifetime: 3.5,
+          speedBasedBrightness: false,
+          brightnessMultiplier: 1.0,
+          minBrightness: 0.6,
+          particleSize: 1.2,
+          velocitySpread: 0.3,
+          drag: 0.98,
+        },
+        cosmic: {
+          emissionRate: 20,
+          particleLifetime: 6.0,
+          speedBasedBrightness: true,
+          brightnessMultiplier: 4.0,
+          minBrightness: 0.05,
+          particleSize: 2.0,
+          velocitySpread: 1.8,
+          drag: 0.96,
+        },
+      };
+
+      // Create the cursor trail with GUI enabled for demo
+      let currentTrail = createCursorTrail({
+        container: document.getElementById("demo-container"),
+        config: presets.default,
+        showGUI: true,
+      });
+
+      // Handle preset buttons
+      const buttons = document.querySelectorAll(".preset-btn");
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const preset = button.dataset.preset;
+
+          // Update active state
+          buttons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+
+          // Apply preset
+          if (presets[preset]) {
+            const particleSystem = currentTrail.getParticleSystem();
+            Object.assign(particleSystem.config, presets[preset]);
+            particleSystem.updateUniforms();
+          }
+        });
+      });
+
+      // Handle cleanup on page unload
+      window.addEventListener("beforeunload", () => {
+        currentTrail.dispose();
+      });
+    </script>
+  </body>
+</html>

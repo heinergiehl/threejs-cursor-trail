@@ -68,9 +68,17 @@ export class TrailEffect {
     time: number
   ): void {
     // Update uniforms
-    this.trailMaterial.uniforms.uTime.value = time;
-    this.trailMaterial.uniforms.uMouse.value.set(mouseX, mouseY);
-    this.trailMaterial.uniforms.uTexture.value = this.renderTargetB.texture;
+    if (this.trailMaterial.uniforms) {
+      if (this.trailMaterial.uniforms.uTime) {
+        this.trailMaterial.uniforms.uTime.value = time;
+      }
+      if (this.trailMaterial.uniforms.uMouse) {
+        this.trailMaterial.uniforms.uMouse.value.set(mouseX, mouseY);
+      }
+      if (this.trailMaterial.uniforms.uTexture) {
+        this.trailMaterial.uniforms.uTexture.value = this.renderTargetB.texture;
+      }
+    }
 
     // Render to target A
     renderer.setRenderTarget(this.renderTargetA);
@@ -82,8 +90,14 @@ export class TrailEffect {
     this.renderTargetB = temp;
 
     // Update display material
-    this.displayMaterial.uniforms.uTexture.value = this.renderTargetB.texture;
-    this.displayMaterial.uniforms.uTime.value = time;
+    if (this.displayMaterial.uniforms) {
+      if (this.displayMaterial.uniforms.uTexture) {
+        this.displayMaterial.uniforms.uTexture.value = this.renderTargetB.texture;
+      }
+      if (this.displayMaterial.uniforms.uTime) {
+        this.displayMaterial.uniforms.uTime.value = time;
+      }
+    }
   }
 
   public render(renderer: THREE.WebGLRenderer, displayCamera: THREE.OrthographicCamera): void {
@@ -93,7 +107,9 @@ export class TrailEffect {
   public resize(width: number, height: number): void {
     this.renderTargetA.setSize(width, height);
     this.renderTargetB.setSize(width, height);
-    this.trailMaterial.uniforms.uResolution.value.set(width, height);
+    if (this.trailMaterial.uniforms?.uResolution) {
+      this.trailMaterial.uniforms.uResolution.value.set(width, height);
+    }
   }
 
   public dispose(): void {

@@ -1,83 +1,69 @@
-# Particle Cursor Effect
+# @heinergiehl/threejs-cursor-trail
 
-A high-performance particle cursor effect built with Three.js and TypeScript, featuring thousands of particles with smooth trail effects.
+[![NPM Version](https://img.shields.io/npm/v/@heinergiehl/threejs-cursor-trail.svg)](https://www.npmjs.com/package/@heinergiehl/threejs-cursor-trail)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/heinergiehl/threejs-cursor-trail/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/heinergiehl/threejs-cursor-trail/actions)
 
-## Features
+A high-performance, customizable 3D particle cursor trail effect built with Three.js and TypeScript. Create stunning interactive particle systems that respond to mouse movement with speed-based brightness, configurable physics, and smooth animations.
 
-- 🎨 **Optimized Particle System**: Efficiently handles 5000+ particles with object pooling
-- 🎯 **Precise Cursor Tracking**: Particles emit exactly at cursor position
-- ✨ **Trail Effects**: Beautiful FBO-based trail rendering
-- 🚀 **TypeScript**: Fully typed with proper class architecture
-- 📦 **Modular Design**: Separated concerns with clean class structure
-- 🎭 **Custom Shaders**: GLSL shaders for advanced visual effects
+## ✨ Features
 
-## Project Structure
+- 🚀 **High Performance** - Optimized WebGL rendering with efficient particle pooling
+- ⚡ **Speed-Responsive** - Particles brightness/opacity adapts to cursor movement speed
+- 🎨 **Highly Customizable** - Extensive configuration options for particles, physics, and visual effects
+- 🎮 **Interactive GUI** - Real-time parameter adjustment with lil-gui integration
+- 📱 **Mobile Friendly** - Responsive design with touch support and performance scaling
+- 🌐 **Framework Agnostic** - Works with React, Vue, Angular, or vanilla JavaScript
+- 📦 **TypeScript** - Full type definitions included
+- 🔧 **Multiple Formats** - ESM, CommonJS, and UMD builds available
 
-```
-src/
-├── core/
-│   ├── ParticleSystem.ts   # Particle emission and management
-│   ├── TrailEffect.ts      # FBO-based trail rendering
-│   └── Cursor.ts           # Cursor tracking and rendering
-├── shaders/
-│   ├── particle.vert.glsl  # Particle vertex shader
-│   ├── particle.frag.glsl  # Particle fragment shader
-│   ├── trail.vert.glsl     # Trail vertex shader
-│   ├── trail.frag.glsl     # Trail fragment shader
-│   └── display.frag.glsl   # Display fragment shader
-├── types/
-│   └── shaders.d.ts        # TypeScript declarations for GLSL
-├── Application.ts          # Main application orchestrator
-├── main.ts                 # Entry point
-└── style.css               # Styles
-```
+## 🚀 Quick Start
 
-## Installation
+### Installation
 
 ```bash
-npm install
+npm install @heinergiehl/threejs-cursor-trail three
 ```
 
-## Development
+### Basic Usage
 
-```bash
-npm run dev
+```javascript
+import { createCursorTrail } from "@heinergiehl/threejs-cursor-trail";
+
+// Create with default settings
+const trail = createCursorTrail();
+
+// Clean up when done
+// trail.dispose();
 ```
 
-## Build
+### Custom Configuration
 
-```bash
-npm run build
+```javascript
+import { createCursorTrail } from "@heinergiehl/threejs-cursor-trail";
+
+const trail = createCursorTrail({
+  maxParticles: 3000,
+  config: {
+    emissionRate: 20,
+    particleLifetime: 3.0,
+    speedBasedBrightness: true,
+    brightnessMultiplier: 2.5,
+    minBrightness: 0.3,
+    particleSize: 1.2,
+    velocitySpread: 1.5,
+    drag: 0.95,
+  },
+  showGUI: true, // Enable debug controls
+});
 ```
 
-## How It Works
+## 📖 API Reference
 
-### Particle System
+### Main Functions
 
-- Uses object pooling to manage thousands of particles efficiently
-- Emits particles at exact cursor position in world space
-- Converts screen coordinates to 3D world coordinates using camera unprojection
-- Each particle has lifetime, velocity, and position properties
+#### `createCursorTrail(options?)`
 
-### Trail Effect
+Creates a complete cursor trail effect with automatic setup.
 
-- Uses Frame Buffer Objects (FBO) for efficient trail rendering
-- Ping-pong rendering between two render targets
-- Creates smooth decay effect with glow post-processing
-
-### Cursor
-
-- Custom cursor with GSAP animation
-- Smooth interpolation for position tracking
-- Provides both current and target positions for different use cases
-
-## Performance
-
-- Handles 5000+ particles at 60 FPS
-- Efficient GPU-based rendering with custom shaders
-- Object pooling prevents garbage collection overhead
-- Optimized attribute updates only when necessary
-
-## License
-
-MIT
+Made with ❤️ by [Heiner Giehl](https://github.com/heinergiehl)

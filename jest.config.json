@@ -1,0 +1,23 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "testMatch": [
+    "**/*.(test|spec).+(ts|tsx|js)"
+  ],
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "/dist/",
+    "setup.ts",
+    "__mocks__/"
+  ],
+  "transform": {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+  "setupFilesAfterEnv": [
+    "<rootDir>/src/__tests__/setup.ts"
+  ],
+  "moduleNameMapper": {
+    "\\.(glsl)$": "<rootDir>/src/__tests__/__mocks__/glslMock.js"
+  },
+  "testTimeout": 10000
+}

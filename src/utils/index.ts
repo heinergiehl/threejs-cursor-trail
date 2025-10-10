@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { GUI } from 'lil-gui';
-import { ParticleSystem } from './core/ParticleSystem';
-import { TrailEffect } from './core/TrailEffect';
-import { Cursor } from './core/Cursor';
+import { ParticleSystem } from '../core/ParticleSystem';
+import { TrailEffect } from '../core/TrailEffect';
+import { Cursor } from '../core/Cursor';
 
 export class Application {
   private scene!: THREE.Scene;
@@ -231,4 +231,55 @@ export class Application {
     this.renderer.dispose();
     this.gui.destroy();
   }
+}
+
+// Utility functions for the public API
+import type { 
+  CursorTrailOptions, 
+  ParticleConfig 
+} from '../types';
+import { 
+  DEFAULT_PARTICLE_CONFIG, 
+  DEFAULT_PARTICLE_COUNT
+} from '../constants';
+
+/**
+ * Creates a complete cursor trail effect with automatic setup
+ */
+export function createCursorTrail(options: CursorTrailOptions = {}): Application {
+  const {
+    config = {}
+  } = options;
+
+  // Create application with merged config
+  const app = new Application();
+  
+  // Configure particle system if config provided
+  if (Object.keys(config).length > 0) {
+    Object.assign(app.getParticleSystem().config, config);
+    app.getParticleSystem().updateUniforms();
+  }
+
+  return app;
+}
+
+/**
+ * Creates a standalone particle system for custom integration
+ */
+export function createParticleSystem(
+  camera: THREE.Camera, 
+  maxParticles: number = DEFAULT_PARTICLE_COUNT,
+  config: Partial<ParticleConfig> = {}
+): ParticleSystem {
+  const system = new ParticleSystem(camera, maxParticles);
+  Object.assign(system.config, config);
+  system.updateUniforms();
+  return system;
+}
+
+/**
+ * Gets the default configuration
+ */
+export function getDefaultConfig(): ParticleConfig {
+  return { ...DEFAULT_PARTICLE_CONFIG };
 }

@@ -120,10 +120,12 @@ export class ParticleSystem {
     const worldPos = this.camera.position.clone().add(direction.multiplyScalar(distance));
 
     // Update speed-based brightness uniform
-    if (this.config.speedBasedBrightness) {
-      this.material.uniforms.uSpeedBrightness.value = Math.max(this.config.minBrightness, velocity * this.config.brightnessMultiplier);
-    } else {
-      this.material.uniforms.uSpeedBrightness.value = 1.0;
+    if (this.material.uniforms?.uSpeedBrightness) {
+      if (this.config.speedBasedBrightness) {
+        this.material.uniforms.uSpeedBrightness.value = Math.max(this.config.minBrightness, velocity * this.config.brightnessMultiplier);
+      } else {
+        this.material.uniforms.uSpeedBrightness.value = 1.0;
+      }
     }
 
     // Emit multiple particles
@@ -162,14 +164,21 @@ export class ParticleSystem {
   }
 
   public update(deltaTime: number): void {
-    const positions = this.geometry.attributes.position.array as Float32Array;
-    const lifetimes = this.geometry.attributes.aLifetime.array as Float32Array;
+    const positionAttribute = this.geometry.attributes.position;
+    const lifetimeAttribute = this.geometry.attributes.aLifetime;
+    
+    if (!positionAttribute?.array || !lifetimeAttribute?.array) {
+      return;
+    }
+    
+    const positions = positionAttribute.array as Float32Array;
+    const lifetimes = lifetimeAttribute.array as Float32Array;
 
     // Update active particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const particle = this.particles[i];
       
-      if (!particle.active) {
+      if (!particle?.active) {
         this.particles.splice(i, 1);
         continue;
       }
@@ -205,12 +214,18 @@ export class ParticleSystem {
     }
 
     // Mark attributes as needing update
-    this.geometry.attributes.position.needsUpdate = true;
-    this.geometry.attributes.aLifetime.needsUpdate = true;
+    if (this.geometry.attributes.position) {
+      this.geometry.attributes.position.needsUpdate = true;
+    }
+    if (this.geometry.attributes.aLifetime) {
+      this.geometry.attributes.aLifetime.needsUpdate = true;
+    }
   }
 
   public updateTime(time: number): void {
-    this.material.uniforms.uTime.value = time;
+    if (this.material.uniforms?.uTime) {
+      this.material.uniforms.uTime.value = time;
+    }
   }
 
   public getMesh(): THREE.Points {
@@ -222,9 +237,17 @@ export class ParticleSystem {
   }
 
   public updateUniforms(): void {
-    this.material.uniforms.uBrightnessMultiplier.value = this.config.brightnessMultiplier;
-    this.material.uniforms.uMinBrightness.value = this.config.minBrightness;
-    this.material.uniforms.uParticleSize.value = this.config.particleSize;
+    if (this.material.uniforms) {
+      if (this.material.uniforms.uBrightnessMultiplier) {
+        this.material.uniforms.uBrightnessMultiplier.value = this.config.brightnessMultiplier;
+      }
+      if (this.material.uniforms.uMinBrightness) {
+        this.material.uniforms.uMinBrightness.value = this.config.minBrightness;
+      }
+      if (this.material.uniforms.uParticleSize) {
+        this.material.uniforms.uParticleSize.value = this.config.particleSize;
+      }
+    }
   }
 
   public dispose(): void {
