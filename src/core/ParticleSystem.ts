@@ -20,17 +20,17 @@ export class ParticleSystem {
   
   // Configuration parameters
   public config = {
-    emissionRate: 15,
+    emissionRate: 1,
     particleLifetime: 2.5,
     speedBasedBrightness: true,
     brightnessMultiplier: 2.0,
     minBrightness: 0.2,
-    particleSize: 1.0,
+    particleSize: 5,
     velocitySpread: 1.0,
     drag: 0.97
   };
 
-  constructor(camera: THREE.Camera, maxParticles: number = 5000) {
+  constructor(camera: THREE.Camera, maxParticles: number = 200000) {
     this.camera = camera;
     this.maxParticles = maxParticles;
     
